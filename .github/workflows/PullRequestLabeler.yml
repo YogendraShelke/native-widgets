@@ -9,7 +9,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b # v6.0.1
+      - uses: actions/labeler@634933edcd8ababfe52f92936142cc22ac488b1b #
         with:
           token: ${{ secrets.GH_PAT }}
           configuration-path: ".github/configs/labeler.yml"
