@@ -1,7 +1,7 @@
 ![Unit tests](https://github.com/mendix/native-widgets/actions/workflows/UnitTests.yml/badge.svg?branch=main)
 ![Mendix 9](https://img.shields.io/badge/mendix-9.0.5-brightgreen.svg)
 
-# Native resources
+# Native resources fork
 
 A bundle of R&D Platform supported widgets & nanoflow actions for building native mobile apps.
 
