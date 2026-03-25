@@ -1,7 +1,7 @@
 {
   "name": "nanoflow-actions-native",
   "moduleName": "Nanoflow Commons",
-  "version": "6.3.0",
+  "version": "6.3.1",
   "license": "Apache-2.0",
   "copyright": "© Mendix Technology BV 2022. All rights reserved.",
   "repository": {
@@ -9,6 +9,8 @@
     "url": "https://github.com/mendix/native-widgets.git"
   },
   "marketplace": {
+    "name": "Nanoflow Commons",
+    "description": "The Nanoflow Commons module contains commonly used nanoflow actions that are usable across web, hybrid mobile, and native mobile apps, such as: client activities, geo location, local storage, & more.",
     "minimumMXVersion": "11.7.0",
     "marketplaceId": 109515
   },

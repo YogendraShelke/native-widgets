@@ -15,7 +15,7 @@ const {
     exportModuleWithWidgets,
     regex
 } = require("./module-automation/commons");
-
+const { getOssFiles, copyFilesToMpk } = require("./module-automation/utils");
 const repoRootPath = join(__dirname, "../../");
 const [moduleFolderNameInRepo, version] = process.env.TAG.split("-v");
 
@@ -58,12 +58,16 @@ async function createNativeMobileResourcesModule() {
     };
     moduleInfo = await bumpVersionInPackageJson(moduleFolder, moduleInfo);
 
+    const ossFiles = await getOssFiles(moduleFolder, {
+        package: moduleInfo.moduleNameInModeler,
+        version: moduleInfo.version
+    });
     await githubAuthentication(moduleInfo);
     const moduleChangelogs = await updateChangelogs(nativeWidgetFolders, moduleInfo);
     await commitAndCreatePullRequest(moduleInfo);
     await updateNativeComponentsTestProject(moduleInfo, tmpFolder, nativeWidgetFolders);
     const mpkOutput = await createMPK(tmpFolder, moduleInfo, regex.excludeFiles);
-    await exportModuleWithWidgets(moduleInfo.moduleNameInModeler, mpkOutput, nativeWidgetFolders);
+    await exportModuleWithWidgets(moduleInfo.moduleNameInModeler, mpkOutput, nativeWidgetFolders, ossFiles);
     await createGithubRelease(moduleInfo, moduleChangelogs, mpkOutput);
     if (process.env.CI !== "true") {
         try {
@@ -85,12 +89,17 @@ async function createNanoflowCommonsModule() {
         moduleFolderNameInModeler: "nanoflowcommons"
     };
     moduleInfo = await bumpVersionInPackageJson(moduleFolder, moduleInfo);
+    const ossFiles = await getOssFiles(moduleFolder, {
+        package: moduleInfo.moduleNameInModeler,
+        version: moduleInfo.version
+    });
 
     await githubAuthentication(moduleInfo);
     const moduleChangelogs = await updateModuleChangelogs(moduleInfo);
     await commitAndCreatePullRequest(moduleInfo);
     await updateNativeComponentsTestProject(moduleInfo, tmpFolder);
     const mpkOutput = await createMPK(tmpFolder, moduleInfo, regex.excludeFiles);
+    await copyFilesToMpk(ossFiles, mpkOutput, moduleInfo.moduleNameInModeler);
     await createGithubRelease(moduleInfo, moduleChangelogs, mpkOutput);
     if (process.env.CI !== "true") {
         try {
@@ -129,7 +138,7 @@ async function updateNativeComponentsTestProject(moduleInfo, tmpFolder, nativeWi
     const tmpFolderActions = join(tmpFolder, `javascriptsource/${moduleInfo.moduleFolderNameInModeler}/actions`);
 
     console.log("Updating NativeComponentsTestProject...");
-    await cloneRepo(moduleInfo.testProjectUrl, tmpFolder);
+    await cloneRepo(moduleInfo.testProjectUrl, tmpFolder, moduleInfo.testProjectBranchName);
 
     console.log("Deleting existing JS Actions from test project...");
     await rm(tmpFolderActions, { force: true, recursive: true }); // this is useful to avoid retaining stale dependencies in the test project.
@@ -199,7 +208,7 @@ async function updateNativeComponentsTestProjectWithAtlas(moduleInfo, tmpFolder)
     const tmpFolderNativeStyles = join(tmpFolder, `themesource/${moduleInfo.moduleFolderNameInModeler}`);
 
     console.log("Updating NativeComponentsTestProject..");
-    await cloneRepo(moduleInfo.testProjectUrl, tmpFolder);
+    await cloneRepo(moduleInfo.testProjectUrl, tmpFolder, moduleInfo.testProjectBranchName);
 
     console.log("Copying Native styling files..");
     await Promise.all([

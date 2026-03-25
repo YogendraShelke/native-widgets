@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [11.4.1] Native Mobile Resources - 2026-3-14
+
+## [2.0.2] GalleryTextFilter
+
+### Fixed
+
+-   Fixed VoiceOver/TalkBack not announcing the clear text button.
+
+## [1.1.1] Switch
+
+### Added
+
+-   Added the ability to change the position of the label in horizontal view from the left side of the switch to the right side.
+
+### Fixed
+
+-   We fixed an issue where the validation message was rendered inside the view container of the switch, which caused incorrect styling of the switch.
+-   Fixed an issue where two overlapping tracks were seen in IOS, giving a inconsistent look to switch.
+
+## [11.4.0] Native Mobile Resources - 2026-3-5
+
+-   We fixed native file system module reference.
+
 ## [11.3.5] Native Mobile Resources - 2026-2-4
 
 -   Changed a caption for the existing "Download file" action to "Download native file".

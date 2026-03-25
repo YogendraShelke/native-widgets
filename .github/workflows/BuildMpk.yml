@@ -27,22 +27,23 @@ jobs:
 
     steps:
       - name: "Checking-out code"
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: false
       - name: "Defining node version"
-        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version-file: ".nvmrc"
+          package-manager-cache: false
       - name: "Setup pnpm"
-        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4
+        uses: pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288 # v5
       - name: "Installing dependencies"
         run: pnpm install
       - name: "Bumping version"
         id: bump_version
-        run:
-          NEW_VER=$(npm --prefix ./packages/jsActions/${{ inputs.module }} version ${{ inputs.version }} --no-git-tag-version)
-          echo "VERSION=$NEW_VER" >> $GITHUB_OUTPUT
+        run: |
+          NEW_VER=$(npm --prefix "./packages/jsActions/${{ inputs.module }}" version "${{ inputs.version }}" --no-git-tag-version)
+          echo "VERSION=${NEW_VER}" >> "$GITHUB_OUTPUT"
       - name: "Building native widgets and js actions"
         run: pnpm -r run release
       - name: "Updating Native Mobile Resources project"
@@ -50,3 +51,15 @@ jobs:
         env:
           MODULE: ${{ inputs.module }}
           VERSION: ${{ steps.bump_version.outputs.VERSION }}
+
+      - name: "Upload MPK artifact"
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f #v7
+        with:
+          name: ${{ env.ARTIFACT_NAME }}-${{ steps.bump_version.outputs.VERSION }}
+          path: ${{ env.ARTIFACT_PATH }}
+          if-no-files-found: error
+
+      - name: "Cleanup tmp folder"
+        if: ${{ always() }}
+        run: |
+          sudo rm -rf tmp || true
